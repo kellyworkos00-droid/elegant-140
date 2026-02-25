@@ -1,9 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Users, Plus, Search, Filter, Download, TrendingUp, DollarSign, UserCheck, AlertCircle, Mail, Phone, BarChart3 } from "lucide-react";
+import { Users, Plus, Search, Filter, Download, TrendingUp, DollarSign, UserCheck, AlertCircle, Mail, Phone, BarChart3, Eye } from "lucide-react";
 import toast from "react-hot-toast";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import { Table, Column } from "@/components/ui/Table";
+import { Card, CardHeader } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { LoadingSkeleton, TableSkeleton, CardSkeleton } from "@/components/ui/LoadingSkeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"];
 
@@ -252,78 +258,118 @@ export default function CustomersPage() {
 
       {/* Customers Table */}
       {isLoading ? (
-        <div className="card p-8 flex justify-center items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
-        </div>
+        <Card padding="lg">
+          <CardHeader title="Customer Accounts" subtitle="Loading customer data..." />
+          <TableSkeleton rows={10} columns={6} />
+        </Card>
       ) : filteredCustomers.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-12 text-center">
-          <Users size={48} className="mx-auto text-gray-400 mb-4" />
-          <p className="text-lg font-semibold text-gray-900">No customers found</p>
-          <p className="text-gray-500 mt-2">Try adjusting your search criteria</p>
-        </div>
+        <Card padding="lg">
+          <EmptyState
+            icon={<Users size={48} />}
+            title="No customers found"
+            description="Try adjusting your search criteria or add a new customer"
+            action={
+              <Button variant="primary" leftIcon={<Plus size={20} />}>
+                Add First Customer
+              </Button>
+            }
+          />
+        </Card>
       ) : (
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+        <Card padding="none">
           <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
-            <h3 className="font-bold text-gray-900">Customer Accounts ({filteredCustomers.length})</h3>
-            <span className="text-sm text-gray-500">Showing {filteredCustomers.length} customers</span>
+            <div>
+              <h3 className="font-bold text-gray-900">Customer Accounts</h3>
+              <p className="text-sm text-gray-500 mt-1">{filteredCustomers.length} customers found</p>
+            </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Customer Code</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Contact</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Balance</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Outstanding</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredCustomers.map((customer) => (
-                  <tr key={customer.id} className="hover:bg-purple-50 transition-colors">
-                    <td className="px-6 py-4 text-sm font-mono text-purple-600 font-bold">{customer.customerCode}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900 font-semibold">{customer.name}</td>
-                    <td className="px-6 py-4 text-sm">
-                      {customer.email || customer.phone ? (
-                        <div className="space-y-1">
-                          {customer.email && (
-                            <div className="flex items-center gap-2 text-gray-600">
-                              <Mail size={14} />
-                              <span>{customer.email}</span>
-                            </div>
-                          )}
-                          {customer.phone && (
-                            <div className="flex items-center gap-2 text-gray-600">
-                              <Phone size={14} />
-                              <span>{customer.phone}</span>
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-gray-400">-</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900 font-bold">
-                      KES {customer.currentBalance.toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <span className={`font-bold ${customer.totalOutstanding > 0 ? "text-orange-600" : "text-green-600"}`}>
-                        KES {customer.totalOutstanding.toLocaleString()}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <button className="px-3 py-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 rounded-lg font-semibold text-xs transition-colors">
-                        View Details
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="p-6">
+            <Table
+              data={filteredCustomers}
+              columns={customersColumns}
+              stickyHeader
+              pagination
+              pageSize={10}
+            />
           </div>
-        </div>
+        </Card>
       )}
     </div>
   );
 }
+
+// Define table columns with TypeScript type safety
+const customersColumns: Column<Customer>[] = [
+  {
+    key: 'customerCode',
+    label: 'Customer Code',
+    sortable: true,
+    width: '140px',
+    render: (customer) => (
+      <span className="font-mono text-purple-600 font-semibold text-sm">{customer.customerCode}</span>
+    ),
+  },
+  {
+    key: 'name',
+    label: 'Name',
+    sortable: true,
+    render: (customer) => (
+      <span className="font-semibold text-gray-900">{customer.name}</span>
+    ),
+  },
+  {
+    key: 'contact',
+    label: 'Contact',
+    width: '220px',
+    render: (customer) => (
+      customer.email || customer.phone ? (
+        <div className="space-y-1">
+          {customer.email && (
+            <div className="flex items-center gap-2 text-gray-600 text-sm">
+              <Mail size={14} />
+              <span>{customer.email}</span>
+            </div>
+          )}
+          {customer.phone && (
+            <div className="flex items-center gap-2 text-gray-600 text-sm">
+              <Phone size={14} />
+              <span>{customer.phone}</span>
+            </div>
+          )}
+        </div>
+      ) : (
+        <span className="text-gray-400">-</span>
+      )
+    ),
+  },
+  {
+    key: 'currentBalance',
+    label: 'Balance',
+    sortable: true,
+    width: '140px',
+    render: (customer) => (
+      <span className="font-bold text-gray-900">KES {customer.currentBalance.toLocaleString()}</span>
+    ),
+  },
+  {
+    key: 'totalOutstanding',
+    label: 'Outstanding',
+    sortable: true,
+    width: '140px',
+    render: (customer) => (
+      <span className={`font-bold ${customer.totalOutstanding > 0 ? 'text-orange-600' : 'text-green-600'}`}>
+        KES {customer.totalOutstanding.toLocaleString()}
+      </span>
+    ),
+  },
+  {
+    key: 'actions',
+    label: 'Actions',
+    width: '120px',
+    render: (customer) => (
+      <Button variant="ghost" size="sm" leftIcon={<Eye size={14} />}>
+        View
+      </Button>
+    ),
+  },
+];

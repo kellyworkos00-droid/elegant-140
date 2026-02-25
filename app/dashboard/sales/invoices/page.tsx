@@ -3,6 +3,12 @@
 import { useEffect, useState } from 'react';
 import { FileText, Plus, Search } from 'lucide-react';
 import Link from 'next/link';
+import { Table, Column } from '@/components/ui/Table';
+import { Card, CardHeader } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { LoadingSkeleton, TableSkeleton } from '@/components/ui/LoadingSkeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 interface Invoice {
   id: string;
@@ -141,54 +147,122 @@ export default function InvoicesPage() {
       </div>
 
       {/* Invoices Table */}
-      <div className="card overflow-hidden">
-        {loading ? (
-          <div className="p-8 text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent mx-auto mb-2"></div>
-            <p className="text-gray-600 font-medium">Loading invoices...</p>
+      {loading ? (
+        <Card padding="lg">
+          <CardHeader title="Sales Invoices" subtitle="Loading invoice data..." />
+          <TableSkeleton rows={10} columns={7} />
+        </Card>
+      ) : filteredInvoices.length === 0 ? (
+        <Card padding="lg">
+          <EmptyState
+            icon={<FileText size={48} />}
+            title="No invoices found"
+            description={search ? "Try adjusting your search criteria" : "Create your first invoice to get started"}
+            action={
+              <Link href="/dashboard/sales/invoices/new">
+                <Button variant="primary" leftIcon={<Plus size={20} />}>
+                  Create Invoice
+                </Button>
+              </Link>
+            }
+          />
+        </Card>
+      ) : (
+        <Card padding="none">
+          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+            <div>
+              <h3 className="font-bold text-gray-900">Sales Invoices</h3>
+              <p className="text-sm text-gray-500 mt-1">{filteredInvoices.length} invoices found</p>
+            </div>
           </div>
-        ) : filteredInvoices.length === 0 ? (
-          <div className="p-8 text-center">
-            <FileText size={48} className="mx-auto text-gray-300 mb-2" />
-            <p className="text-gray-500">No invoices found</p>
+          <div className="p-6">
+            <Table
+              data={filteredInvoices}
+              columns={invoicesColumns}
+              stickyHeader
+              pagination
+              pageSize={15}
+            />
           </div>
-        ) : (
-          <table className="w-full">
-            <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Invoice #</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Customer</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Amount</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Paid</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Balance</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {filteredInvoices.map((invoice) => (
-                <tr key={invoice.id} className="hover:bg-blue-50 transition-colors">
-                  <td className="px-6 py-4 font-bold text-blue-600">{invoice.number}</td>
-                  <td className="px-6 py-4 font-medium text-gray-900">{invoice.customer?.name || 'N/A'}</td>
-                  <td className="px-6 py-4 text-gray-600">{new Date(invoice.invoiceDate).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 font-semibold text-gray-900">KES {(invoice.total || 0).toLocaleString()}</td>
-                  <td className="px-6 py-4 text-green-600 font-bold">KES {(invoice.paid || 0).toLocaleString()}</td>
-                  <td className="px-6 py-4 text-orange-600 font-bold">KES {((invoice.total || 0) - (invoice.paid || 0)).toLocaleString()}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      invoice.status === 'PAID' ? 'badge-success' :
-                      invoice.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {invoice.status || 'DRAFT'}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+        </Card>
+      )}
     </div>
   );
 }
+
+// Define table columns with TypeScript type safety
+const invoicesColumns: Column<Invoice>[] = [
+  {
+    key: 'number',
+    label: 'Invoice #',
+    sortable: true,
+    width: '140px',
+    render: (invoice) => (
+      <span className="font-mono text-blue-600 font-bold text-sm">{invoice.number}</span>
+    ),
+  },
+  {
+    key: 'customer',
+    label: 'Customer',
+    sortable: true,
+    render: (invoice) => (
+      <span className="font-semibold text-gray-900">{invoice.customer?.name || 'N/A'}</span>
+    ),
+  },
+  {
+    key: 'invoiceDate',
+    label: 'Invoice Date',
+    sortable: true,
+    width: '130px',
+    render: (invoice) => (
+      <span className="text-gray-600">{new Date(invoice.invoiceDate).toLocaleDateString()}</span>
+    ),
+  },
+  {
+    key: 'total',
+    label: 'Amount',
+    sortable: true,
+    width: '130px',
+    render: (invoice) => (
+      <span className="font-bold text-gray-900">KES {(invoice.total || 0).toLocaleString()}</span>
+    ),
+  },
+  {
+    key: 'paid',
+    label: 'Paid',
+    sortable: true,
+    width: '130px',
+    render: (invoice) => (
+      <span className="font-bold text-green-600">KES {(invoice.paid || 0).toLocaleString()}</span>
+    ),
+  },
+  {
+    key: 'remaining',
+    label: 'Balance',
+    sortable: true,
+    width: '130px',
+    render: (invoice) => (
+      <span className="font-bold text-orange-600">
+        KES {((invoice.total || 0) - (invoice.paid || 0)).toLocaleString()}
+      </span>
+    ),
+  },
+  {
+    key: 'status',
+    label: 'Status',
+    sortable: true,
+    width: '120px',
+    render: (invoice) => (
+      <Badge
+        variant={
+          invoice.status === 'PAID' ? 'success' :
+          invoice.status === 'PENDING' ? 'warning' :
+          'neutral'
+        }
+        dot
+      >
+        {invoice.status || 'DRAFT'}
+      </Badge>
+    ),
+  },
+];
