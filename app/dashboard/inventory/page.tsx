@@ -1,9 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Package, Plus, AlertCircle, TrendingDown, Search, Filter, Download, BarChart3, RefreshCw, Archive, TrendingUp, DollarSign, Boxes } from "lucide-react";
+import { Package, Plus, AlertCircle, TrendingDown, Search, Filter, Download, BarChart3, RefreshCw, Archive, TrendingUp, DollarSign, Boxes, Edit2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { Table, Column } from "@/components/ui/Table";
+import { Card, CardHeader } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { LoadingSkeleton, TableSkeleton, CardSkeleton } from "@/components/ui/LoadingSkeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
@@ -283,81 +289,117 @@ export default function InventoryPage() {
 
       {/* Products Table */}
       {isLoading ? (
-        <div className="card p-8 flex justify-center items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
-        </div>
+        <Card padding="lg">
+          <CardHeader title="Product Inventory" subtitle="Loading inventory data..." />
+          <TableSkeleton rows={10} columns={7} />
+        </Card>
       ) : filteredProducts.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-12 text-center">
-          <Package size={48} className="mx-auto text-gray-400 mb-4" />
-          <p className="text-lg font-semibold text-gray-900\">No products found</p>
-          <p className="text-gray-500 mt-2\">Try adjusting your search or filters</p>
-        </div>
+        <Card padding="lg">
+          <EmptyState
+            icon={<Package size={48} />}
+            title="No products found"
+            description="Try adjusting your search or filters"
+            action={
+              <Button variant="primary" leftIcon={<Plus size={20} />}>
+                Add First Product
+              </Button>
+            }
+          />
+        </Card>
       ) : (
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden\">
+        <Card padding="none">
           <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
-            <h3 className="font-bold text-gray-900\">Product Inventory ({filteredProducts.length})</h3>
-            <span className="text-sm text-gray-500\">Showing {Math.min(filteredProducts.length, 15)} of {filteredProducts.length} products</span>
+            <div>
+              <h3 className="font-bold text-gray-900">Product Inventory</h3>
+              <p className="text-sm text-gray-500 mt-1">{filteredProducts.length} products found</p>
+            </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider\">SKU</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider\">Product Name</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider\">Quantity</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider\">Reorder Level</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider\">Unit Price</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider\">Status</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider\">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200\">
-                {filteredProducts.slice(0, 15).map((product) => (
-                  <tr key={product.id} className="hover:bg-blue-50 transition-colors\">
-                    <td className="px-6 py-4 text-sm font-mono text-blue-600 font-bold\">{product.sku}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900 font-semibold\">{product.name}</td>
-                    <td className="px-6 py-4 text-sm\">
-                      <span
-                        className={
-                          product.quantity <= product.reorderLevel
-                            ? "text-red-600 font-bold flex items-center gap-1"
-                            : "text-gray-900 font-semibold"
-                        }
-                      >
-                        {product.quantity <= product.reorderLevel && (
-                          <AlertCircle size={16} />
-                        )}
-                        {product.quantity} {product.unit}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600 font-medium\">{product.reorderLevel} {product.unit}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900 font-bold\">KES {product.price.toLocaleString()}</td>
-                    <td className="px-6 py-4 text-sm\">
-                      <span
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold inline-flex items-center gap-1 ${
-                          product.status === "ACTIVE"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-gray-100 text-gray-700"
-                        }`}
-                      >
-                        <div className={`w-1.5 h-1.5 rounded-full ${
-                          product.status === "ACTIVE" ? "bg-green-600" : "bg-gray-600"
-                        }`}></div>
-                        {product.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm\">
-                      <button className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg font-semibold text-xs transition-colors\">
-                        Edit
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="p-6">
+            <Table
+              data={filteredProducts}
+              columns={inventoryColumns}
+              stickyHeader
+              pagination
+              pageSize={15}
+            />
           </div>
-        </div>
+        </Card>
       )}
     </div>
   );
 }
+
+// Define table columns with TypeScript type safety
+const inventoryColumns: Column<Product>[] = [
+  {
+    key: 'sku',
+    label: 'SKU',
+    sortable: true,
+    width: '120px',
+    render: (product) => (
+      <span className="font-mono text-blue-600 font-semibold text-sm">{product.sku}</span>
+    ),
+  },
+  {
+    key: 'name',
+    label: 'Product Name',
+    sortable: true,
+    render: (product) => (
+      <span className="font-semibold text-gray-900">{product.name}</span>
+    ),
+  },
+  {
+    key: 'quantity',
+    label: 'Quantity',
+    sortable: true,
+    width: '140px',
+    render: (product) => (
+      <div className={`flex items-center gap-2 ${product.quantity <= product.reorderLevel ? 'text-red-600 font-bold' : 'text-gray-900'}`}>
+        {product.quantity <= product.reorderLevel && <AlertCircle size={16} />}
+        <span>{product.quantity} {product.unit}</span>
+      </div>
+    ),
+  },
+  {
+    key: 'reorderLevel',
+    label: 'Reorder Level',
+    sortable: true,
+    width: '140px',
+    render: (product) => (
+      <span className="text-gray-600">{product.reorderLevel} {product.unit}</span>
+    ),
+  },
+  {
+    key: 'price',
+    label: 'Unit Price',
+    sortable: true,
+    width: '120px',
+    render: (product) => (
+      <span className="font-bold text-gray-900">KES {product.price.toLocaleString()}</span>
+    ),
+  },
+  {
+    key: 'status',
+    label: 'Status',
+    sortable: true,
+    width: '120px',
+    render: (product) => (
+      <Badge
+        variant={product.status === 'ACTIVE' ? 'success' : 'neutral'}
+        dot
+      >
+        {product.status}
+      </Badge>
+    ),
+  },
+  {
+    key: 'actions',
+    label: 'Actions',
+    width: '100px',
+    render: (product) => (
+      <Button variant="ghost" size="sm" leftIcon={<Edit2 size={14} />}>
+        Edit
+      </Button>
+    ),
+  },
+];
