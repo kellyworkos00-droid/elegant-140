@@ -1,0 +1,950 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model accounts {
+  id             String           @id
+  accountCode    String           @unique
+  accountName    String
+  accountType    String
+  description    String?
+  currentBalance Float            @default(0)
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime
+  ledger_entries ledger_entries[]
+}
+
+model api_metrics {
+  id           String   @id
+  endpoint     String
+  method       String
+  statusCode   Int
+  responseTime Int
+  timestamp    DateTime @default(now())
+
+  @@index([endpoint])
+  @@index([method])
+  @@index([timestamp])
+}
+
+model attendances {
+  id          String    @id
+  employeeId  String
+  date        DateTime  @db.Date
+  checkIn     DateTime?
+  checkOut    DateTime?
+  hoursWorked Float?
+  status      String    @default("PRESENT")
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  employees   employees @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, date])
+  @@index([date])
+  @@index([employeeId])
+}
+
+model audit_logs {
+  id          String   @id
+  userId      String
+  action      String
+  entityType  String?
+  entityId    String?
+  description String
+  ipAddress   String?
+  userAgent   String?
+  metadata    String?
+  createdAt   DateTime @default(now())
+  users       users    @relation(fields: [userId], references: [id])
+}
+
+model bank_transactions {
+  id                  String               @id
+  bankTransactionId   String               @unique
+  transactionDate     DateTime
+  valueDate           DateTime?
+  amount              Float
+  currency            String               @default("KES")
+  reference           String
+  debitAccount        String?
+  creditAccount       String?
+  balance             Float?
+  status              String               @default("PENDING")
+  matchedAt           DateTime?
+  matchedBy           String?
+  statementFileName   String
+  statementUploadId   String
+  rowNumber           Int
+  importedAt          DateTime             @default(now())
+  importedBy          String
+  users               users                @relation(fields: [importedBy], references: [id])
+  payments            payments?
+  reconciliation_logs reconciliation_logs?
+}
+
+model credit_note_items {
+  id           String       @id
+  creditNoteId String
+  description  String
+  quantity     Float
+  unitPrice    Float
+  taxRate      Float        @default(0)
+  taxAmount    Float        @default(0)
+  totalAmount  Float
+  productId    String?
+  sku          String?
+  notes        String?
+  credit_notes credit_notes @relation(fields: [creditNoteId], references: [id], onDelete: Cascade)
+
+  @@index([creditNoteId])
+}
+
+model credit_notes {
+  id                                   String              @id
+  creditNoteNumber                     String              @unique
+  customerId                           String
+  invoiceId                            String?
+  subtotal                             Float
+  taxAmount                            Float               @default(0)
+  totalAmount                          Float
+  appliedAmount                        Float               @default(0)
+  remainingAmount                      Float
+  creditNoteType                       String              @default("REFUND")
+  reason                               String
+  status                               String              @default("DRAFT")
+  issueDate                            DateTime
+  approvedDate                         DateTime?
+  appliedDate                          DateTime?
+  referenceType                        String?
+  referenceId                          String?
+  notes                                String?
+  internalNotes                        String?
+  createdBy                            String
+  approvedBy                           String?
+  createdAt                            DateTime            @default(now())
+  updatedAt                            DateTime
+  credit_note_items                    credit_note_items[]
+  users_credit_notes_approvedByTousers users?              @relation("credit_notes_approvedByTousers", fields: [approvedBy], references: [id], onDelete: Restrict)
+  users_credit_notes_createdByTousers  users               @relation("credit_notes_createdByTousers", fields: [createdBy], references: [id])
+  customers                            customers           @relation(fields: [customerId], references: [id])
+  invoices                             invoices?           @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+
+  @@index([customerId])
+  @@index([invoiceId])
+  @@index([issueDate])
+  @@index([status])
+}
+
+model customers {
+  id                   String           @id
+  customerCode         String           @unique
+  name                 String
+  email                String?
+  phone                String?
+  billingAddress       String?
+  currentBalance       Float            @default(0)
+  totalPaid            Float            @default(0)
+  totalOutstanding     Float            @default(0)
+  creditLimit          Float?
+  isActive             Boolean          @default(true)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime
+  averagePaymentAmount Float            @default(0)
+  daysOverdue          Int              @default(0)
+  lastPaymentDate      DateTime?
+  totalPayments        Int              @default(0)
+  credit_notes         credit_notes[]
+  invoices             invoices[]
+  ledger_entries       ledger_entries[]
+  payments             payments[]
+  pos_orders           pos_orders[]
+  sales_orders         sales_orders[]
+  sales_quotes         sales_quotes[]
+
+  @@index([currentBalance])
+  @@index([totalOutstanding])
+}
+
+model departments {
+  id          String      @id
+  name        String      @unique
+  description String?
+  managerId   String?
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime
+  employees   employees[]
+}
+
+model employees {
+  id               String        @id
+  employeeNumber   String        @unique
+  firstName        String
+  lastName         String
+  email            String        @unique
+  phone            String?
+  dateOfBirth      DateTime?
+  gender           String?
+  address          String?
+  city             String?
+  country          String        @default("Kenya")
+  departmentId     String?
+  position         String
+  employmentType   String        @default("FULL_TIME")
+  hireDate         DateTime      @default(now())
+  terminationDate  DateTime?
+  employmentStatus String        @default("ACTIVE")
+  basicSalary      Float         @default(0)
+  currency         String        @default("KES")
+  paymentFrequency String        @default("MONTHLY")
+  bankName         String?
+  bankAccount      String?
+  taxId            String?
+  nhifNumber       String?
+  nssfNumber       String?
+  isActive         Boolean       @default(true)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime
+  attendances      attendances[]
+  departments      departments?  @relation(fields: [departmentId], references: [id])
+  leaves           leaves[]
+  payrolls         payrolls[]
+
+  @@index([departmentId])
+  @@index([email])
+  @@index([employeeNumber])
+  @@index([employmentStatus])
+}
+
+model expense_categories {
+  id                    String     @id
+  name                  String     @unique
+  monthlyBudget         Float      @default(0)
+  alertThresholdPercent Float      @default(80)
+  isActive              Boolean    @default(true)
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime
+  expenses              expenses[]
+}
+
+model expenses {
+  id                 String              @id
+  expenseNumber      String              @unique
+  category           String
+  categoryId         String?
+  amount             Float
+  description        String?
+  expenseDate        DateTime
+  paymentMethod      String?
+  vendor             String?
+  reference          String?
+  createdBy          String
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime
+  expense_categories expense_categories? @relation(fields: [categoryId], references: [id])
+  users              users               @relation(fields: [createdBy], references: [id])
+}
+
+model invoices {
+  id                  String           @id
+  invoiceNumber       String           @unique
+  customerId          String
+  subtotal            Float
+  taxAmount           Float            @default(0)
+  totalAmount         Float
+  paidAmount          Float            @default(0)
+  balanceAmount       Float
+  status              String           @default("DRAFT")
+  issueDate           DateTime
+  dueDate             DateTime
+  paidDate            DateTime?
+  description         String?
+  notes               String?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime
+  lastPaymentDate     DateTime?
+  partialPaymentCount Int              @default(0)
+  paymentCount        Int              @default(0)
+  credit_notes        credit_notes[]
+  customers           customers        @relation(fields: [customerId], references: [id])
+  ledger_entries      ledger_entries[]
+  payments            payments[]
+  pos_orders          pos_orders[]
+  sales_orders        sales_orders?
+
+  @@index([paidAmount])
+  @@index([status])
+}
+
+model leaves {
+  id              String    @id
+  employeeId      String
+  leaveType       String
+  startDate       DateTime
+  endDate         DateTime
+  daysRequested   Int
+  reason          String
+  status          String    @default("PENDING")
+  approvedBy      String?
+  approvedDate    DateTime?
+  rejectionReason String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime
+  employees       employees @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])
+  @@index([startDate, endDate])
+  @@index([status])
+}
+
+model ledger_entries {
+  id                   String          @id
+  accountId            String
+  transactionId        String
+  entryType            String
+  amount               Float
+  entryDate            DateTime
+  description          String
+  customerId           String?
+  invoiceId            String?
+  paymentId            String?
+  isReversed           Boolean         @default(false)
+  reversalEntryId      String?         @unique
+  createdBy            String
+  createdAt            DateTime        @default(now())
+  accounts             accounts        @relation(fields: [accountId], references: [id])
+  users                users           @relation(fields: [createdBy], references: [id])
+  customers            customers?      @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  invoices             invoices?       @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  payments             payments?       @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  ledger_entries       ledger_entries? @relation("ledger_entriesToledger_entries", fields: [reversalEntryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  other_ledger_entries ledger_entries? @relation("ledger_entriesToledger_entries")
+}
+
+model payment_method_configs {
+  id                String   @id
+  methodName        String   @unique
+  displayName       String
+  icon              String?
+  category          String
+  processingTime    Int
+  isActive          Boolean  @default(true)
+  requiresReference Boolean  @default(true)
+  metadata          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime
+}
+
+model payments {
+  id                String             @id
+  paymentNumber     String             @unique
+  customerId        String
+  invoiceId         String?
+  bankTransactionId String?            @unique
+  amount            Float
+  paymentDate       DateTime
+  paymentMethod     String             @default("BANK_TRANSFER")
+  reference         String
+  status            String             @default("PENDING")
+  isReconciled      Boolean            @default(false)
+  reconciledAt      DateTime?
+  reconciledBy      String?
+  notes             String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime
+  failureReason     String?
+  lastRetryAt       DateTime?
+  metadata          String?
+  processingTime    Int?
+  requestId         String?
+  retryCount        Int                @default(0)
+  ledger_entries    ledger_entries[]
+  bank_transactions bank_transactions? @relation(fields: [bankTransactionId], references: [id], onDelete: Restrict)
+  customers         customers          @relation(fields: [customerId], references: [id])
+  invoices          invoices?          @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  users             users?             @relation(fields: [reconciledBy], references: [id], onDelete: Restrict)
+
+  @@index([requestId])
+  @@index([retryCount])
+}
+
+model payroll_deductions {
+  id            String   @id
+  payrollId     String
+  deductionType String
+  description   String
+  amount        Float
+  createdAt     DateTime @default(now())
+  payrolls      payrolls @relation(fields: [payrollId], references: [id], onDelete: Cascade)
+
+  @@index([payrollId])
+}
+
+model payrolls {
+  id                 String               @id
+  employeeId         String
+  month              Int
+  year               Int
+  basicSalary        Float
+  allowances         Float                @default(0)
+  bonuses            Float                @default(0)
+  overtime           Float                @default(0)
+  grossPay           Float
+  taxAmount          Float                @default(0)
+  nhifAmount         Float                @default(0)
+  nssfAmount         Float                @default(0)
+  otherDeductions    Float                @default(0)
+  totalDeductions    Float
+  netPay             Float
+  paymentDate        DateTime?
+  paymentMethod      String?
+  paymentReference   String?
+  status             String               @default("DRAFT")
+  notes              String?
+  processingDate     DateTime?
+  processedBy        String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  payroll_deductions payroll_deductions[]
+  employees          employees            @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, month, year])
+  @@index([employeeId])
+  @@index([month, year])
+  @@index([status])
+}
+
+model pos_order_items {
+  id         String     @id
+  posOrderId String
+  productId  String
+  quantity   Int
+  unitPrice  Float
+  discount   Float      @default(0)
+  totalPrice Float
+  notes      String?
+  createdAt  DateTime   @default(now())
+  pos_orders pos_orders @relation(fields: [posOrderId], references: [id], onDelete: Cascade)
+  products   products   @relation(fields: [productId], references: [id])
+}
+
+model pos_orders {
+  id              String            @id
+  orderNumber     String            @unique
+  customerId      String?
+  invoiceId       String?
+  subtotal        Float             @default(0)
+  tax             Float             @default(0)
+  discount        Float             @default(0)
+  totalAmount     Float             @default(0)
+  amountPaid      Float             @default(0)
+  paymentMethod   String?
+  paymentStatus   String            @default("PENDING")
+  status          String            @default("DRAFT")
+  createdBy       String
+  orderDate       DateTime          @default(now())
+  completedAt     DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  pos_order_items pos_order_items[]
+  users           users             @relation(fields: [createdBy], references: [id])
+  customers       customers?        @relation(fields: [customerId], references: [id])
+  invoices        invoices?         @relation(fields: [invoiceId], references: [id])
+}
+
+model product_return_items {
+  id              String          @id
+  returnId        String
+  productId       String
+  locationId      String?
+  quantity        Float
+  unitPrice       Float
+  totalPrice      Float
+  condition       String          @default("GOOD")
+  restockable     Boolean         @default(true)
+  notes           String?
+  products        products        @relation(fields: [productId], references: [id])
+  product_returns product_returns @relation(fields: [returnId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([returnId])
+}
+
+model product_returns {
+  id                   String                 @id
+  returnNumber         String                 @unique
+  returnType           String                 @default("CUSTOMER_RETURN")
+  referenceType        String?
+  referenceId          String?
+  customerId           String?
+  supplierId           String?
+  reason               String
+  status               String                 @default("PENDING")
+  totalAmount          Float
+  refundAmount         Float
+  restockFee           Float                  @default(0)
+  returnDate           DateTime               @default(now())
+  approvedDate         DateTime?
+  completedDate        DateTime?
+  notes                String?
+  createdBy            String
+  approvedBy           String?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime
+  product_return_items product_return_items[]
+  users                users                  @relation(fields: [createdBy], references: [id])
+
+  @@index([returnDate])
+  @@index([returnType])
+  @@index([status])
+}
+
+model products {
+  id                   String                 @id
+  sku                  String                 @unique
+  name                 String
+  description          String?
+  price                Float
+  cost                 Float?
+  quantity             Int                    @default(0)
+  reorderLevel         Int                    @default(10)
+  unit                 String                 @default("UNIT")
+  imageUrl             String?
+  status               String                 @default("ACTIVE")
+  category             String?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime
+  pos_order_items      pos_order_items[]
+  product_return_items product_return_items[]
+  purchase_order_items purchase_order_items[]
+  sales_delivery_items sales_delivery_items[]
+  sales_order_items    sales_order_items[]
+  sales_quote_items    sales_quote_items[]
+  stock_levels         stock_levels[]
+  stock_movements      stock_movements[]
+  stock_transfer_items stock_transfer_items[]
+}
+
+model project_expenses {
+  id          String   @id
+  projectId   String
+  description String
+  category    String
+  amount      Float
+  date        DateTime @default(now())
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  projects    projects @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([category])
+  @@index([projectId])
+}
+
+model project_milestones {
+  id          String   @id
+  projectId   String
+  title       String
+  description String?
+  dueDate     DateTime
+  status      String   @default("PENDING")
+  priority    String   @default("MEDIUM")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  projects    projects @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([status])
+}
+
+model projects {
+  id                 String               @id
+  name               String
+  clientName         String
+  tenderReference    String?
+  description        String?
+  quotedAmount       Float                @default(0)
+  estimatedExpenses  Float                @default(0)
+  actualExpenses     Float                @default(0)
+  status             String               @default("PLANNING")
+  createdBy          String
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  project_expenses   project_expenses[]
+  project_milestones project_milestones[]
+  users              users                @relation(fields: [createdBy], references: [id])
+}
+
+model purchase_order_items {
+  id              String          @id
+  purchaseOrderId String
+  productId       String
+  quantity        Int
+  unitCost        Float
+  totalCost       Float
+  createdAt       DateTime        @default(now())
+  products        products        @relation(fields: [productId], references: [id])
+  purchase_orders purchase_orders @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+}
+
+model purchase_orders {
+  id                   String                 @id
+  orderNumber          String                 @unique
+  supplierId           String
+  subtotal             Float                  @default(0)
+  tax                  Float                  @default(0)
+  totalAmount          Float                  @default(0)
+  status               String                 @default("DRAFT")
+  expectedDate         DateTime?
+  notes                String?
+  createdBy            String
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime
+  purchase_order_items purchase_order_items[]
+  users                users                  @relation(fields: [createdBy], references: [id])
+  suppliers            suppliers              @relation(fields: [supplierId], references: [id])
+  supplier_bills       supplier_bills[]
+}
+
+model query_metrics {
+  id           String   @id
+  query        String
+  duration     Int
+  hasError     Boolean  @default(false)
+  errorMessage String?
+  timestamp    DateTime @default(now())
+
+  @@index([duration])
+  @@index([hasError])
+  @@index([timestamp])
+}
+
+model reconciliation_logs {
+  id                String            @id
+  bankTransactionId String            @unique
+  action            String
+  matchedCustomerId String?
+  matchedInvoiceId  String?
+  matchedAmount     Float?
+  reason            String?
+  notes             String?
+  performedBy       String
+  performedAt       DateTime          @default(now())
+  bank_transactions bank_transactions @relation(fields: [bankTransactionId], references: [id], onDelete: Cascade)
+  users             users             @relation(fields: [performedBy], references: [id])
+}
+
+model sales_deliveries {
+  id                   String                 @id
+  deliveryNumber       String                 @unique
+  salesOrderId         String
+  status               String                 @default("PENDING")
+  dispatchedAt         DateTime?
+  deliveredAt          DateTime?
+  createdBy            String
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime
+  users                users                  @relation(fields: [createdBy], references: [id])
+  sales_orders         sales_orders           @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
+  sales_delivery_items sales_delivery_items[]
+}
+
+model sales_delivery_items {
+  id               String           @id
+  salesDeliveryId  String
+  productId        String
+  quantity         Int
+  createdAt        DateTime         @default(now())
+  products         products         @relation(fields: [productId], references: [id])
+  sales_deliveries sales_deliveries @relation(fields: [salesDeliveryId], references: [id], onDelete: Cascade)
+}
+
+model sales_order_items {
+  id           String       @id
+  salesOrderId String
+  productId    String
+  quantity     Int
+  unitPrice    Float
+  discount     Float        @default(0)
+  totalPrice   Float
+  createdAt    DateTime     @default(now())
+  products     products     @relation(fields: [productId], references: [id])
+  sales_orders sales_orders @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
+}
+
+model sales_orders {
+  id                                   String              @id
+  orderNumber                          String              @unique
+  customerId                           String
+  quoteId                              String?             @unique
+  invoiceId                            String?             @unique
+  status                               String              @default("DRAFT")
+  approvalStatus                       String              @default("NOT_SUBMITTED")
+  approvedBy                           String?
+  approvedAt                           DateTime?
+  submittedAt                          DateTime?
+  deliveredAt                          DateTime?
+  notes                                String?
+  subtotal                             Float               @default(0)
+  tax                                  Float               @default(0)
+  totalAmount                          Float               @default(0)
+  createdBy                            String
+  createdAt                            DateTime            @default(now())
+  updatedAt                            DateTime
+  sales_deliveries                     sales_deliveries[]
+  sales_order_items                    sales_order_items[]
+  users_sales_orders_approvedByTousers users?              @relation("sales_orders_approvedByTousers", fields: [approvedBy], references: [id])
+  users_sales_orders_createdByTousers  users               @relation("sales_orders_createdByTousers", fields: [createdBy], references: [id])
+  customers                            customers           @relation(fields: [customerId], references: [id])
+  invoices                             invoices?           @relation(fields: [invoiceId], references: [id])
+  sales_quotes                         sales_quotes?       @relation(fields: [quoteId], references: [id])
+}
+
+model sales_quote_items {
+  id           String       @id
+  salesQuoteId String
+  productId    String
+  quantity     Int
+  unitPrice    Float
+  discount     Float        @default(0)
+  totalPrice   Float
+  createdAt    DateTime     @default(now())
+  products     products     @relation(fields: [productId], references: [id])
+  sales_quotes sales_quotes @relation(fields: [salesQuoteId], references: [id], onDelete: Cascade)
+}
+
+model sales_quotes {
+  id                String              @id
+  quoteNumber       String              @unique
+  customerId        String
+  status            String              @default("DRAFT")
+  subtotal          Float               @default(0)
+  tax               Float               @default(0)
+  totalAmount       Float               @default(0)
+  validUntil        DateTime?
+  notes             String?
+  createdBy         String
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  sales_orders      sales_orders?
+  sales_quote_items sales_quote_items[]
+  users             users               @relation(fields: [createdBy], references: [id])
+  customers         customers           @relation(fields: [customerId], references: [id])
+}
+
+model stock_levels {
+  id                  String              @id
+  productId           String
+  warehouseId         String
+  locationId          String
+  quantity            Int                 @default(0)
+  updatedAt           DateTime
+  warehouse_locations warehouse_locations @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  products            products            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouses          warehouses          @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, locationId])
+}
+
+model stock_movements {
+  id                  String              @id
+  productId           String
+  warehouseId         String
+  locationId          String
+  quantity            Int
+  movementType        String
+  referenceType       String?
+  referenceId         String?
+  notes               String?
+  createdBy           String
+  createdAt           DateTime            @default(now())
+  users               users               @relation(fields: [createdBy], references: [id])
+  warehouse_locations warehouse_locations @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  products            products            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouses          warehouses          @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@index([locationId])
+  @@index([productId])
+  @@index([warehouseId])
+}
+
+model stock_transfer_items {
+  id              String          @id
+  transferId      String
+  productId       String
+  quantity        Int
+  products        products        @relation(fields: [productId], references: [id])
+  stock_transfers stock_transfers @relation(fields: [transferId], references: [id], onDelete: Cascade)
+}
+
+model stock_transfers {
+  id                                                                      String                 @id
+  transferNumber                                                          String                 @unique
+  fromLocationId                                                          String
+  toLocationId                                                            String
+  status                                                                  String                 @default("DRAFT")
+  createdBy                                                               String
+  createdAt                                                               DateTime               @default(now())
+  completedAt                                                             DateTime?
+  stock_transfer_items                                                    stock_transfer_items[]
+  users                                                                   users                  @relation(fields: [createdBy], references: [id])
+  warehouse_locations_stock_transfers_fromLocationIdTowarehouse_locations warehouse_locations    @relation("stock_transfers_fromLocationIdTowarehouse_locations", fields: [fromLocationId], references: [id])
+  warehouse_locations_stock_transfers_toLocationIdTowarehouse_locations   warehouse_locations    @relation("stock_transfers_toLocationIdTowarehouse_locations", fields: [toLocationId], references: [id])
+}
+
+model supplier_bills {
+  id                                     String              @id
+  billNumber                             String              @unique
+  supplierId                             String
+  reference                              String?
+  issueDate                              DateTime
+  dueDate                                DateTime
+  totalAmount                            Float
+  paidAmount                             Float               @default(0)
+  balanceAmount                          Float
+  status                                 String              @default("OPEN")
+  approvalStatus                         String              @default("NOT_SUBMITTED")
+  approvedBy                             String?
+  approvedAt                             DateTime?
+  submittedAt                            DateTime?
+  purchaseOrderId                        String?
+  matchedAt                              DateTime?
+  matchedBy                              String?
+  notes                                  String?
+  createdBy                              String
+  createdAt                              DateTime            @default(now())
+  updatedAt                              DateTime
+  users_supplier_bills_approvedByTousers users?              @relation("supplier_bills_approvedByTousers", fields: [approvedBy], references: [id])
+  users_supplier_bills_createdByTousers  users               @relation("supplier_bills_createdByTousers", fields: [createdBy], references: [id])
+  users_supplier_bills_matchedByTousers  users?              @relation("supplier_bills_matchedByTousers", fields: [matchedBy], references: [id])
+  purchase_orders                        purchase_orders?    @relation(fields: [purchaseOrderId], references: [id])
+  suppliers                              suppliers           @relation(fields: [supplierId], references: [id])
+  supplier_payments                      supplier_payments[]
+}
+
+model supplier_payments {
+  id             String         @id
+  paymentNumber  String         @unique
+  supplierId     String
+  billId         String
+  amount         Float
+  paymentDate    DateTime
+  paymentMethod  String?
+  reference      String?
+  notes          String?
+  createdBy      String
+  createdAt      DateTime       @default(now())
+  supplier_bills supplier_bills @relation(fields: [billId], references: [id], onDelete: Cascade)
+  users          users          @relation(fields: [createdBy], references: [id])
+  suppliers      suppliers      @relation(fields: [supplierId], references: [id])
+}
+
+model suppliers {
+  id                String              @id
+  supplierCode      String              @unique
+  name              String
+  email             String?
+  phone             String?
+  address           String?
+  isActive          Boolean             @default(true)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  purchase_orders   purchase_orders[]
+  supplier_bills    supplier_bills[]
+  supplier_payments supplier_payments[]
+}
+
+model system_logs {
+  id        String    @id
+  message   String
+  level     String
+  category  String
+  userId    String?
+  requestId String?
+  ipAddress String?
+  duration  Int?
+  error     String?
+  metadata  String?
+  createdAt DateTime  @default(now())
+  expiresAt DateTime?
+  users     users?    @relation(fields: [userId], references: [id])
+
+  @@index([category])
+  @@index([createdAt])
+  @@index([level])
+  @@index([requestId])
+  @@index([userId])
+}
+
+model users {
+  id                                              String                @id
+  email                                           String                @unique
+  password                                        String
+  firstName                                       String
+  lastName                                        String
+  role                                            String                @default("VIEWER")
+  isActive                                        Boolean               @default(true)
+  createdAt                                       DateTime              @default(now())
+  updatedAt                                       DateTime
+  lastLogin                                       DateTime?
+  audit_logs                                      audit_logs[]
+  bank_transactions                               bank_transactions[]
+  credit_notes_credit_notes_approvedByTousers     credit_notes[]        @relation("credit_notes_approvedByTousers")
+  credit_notes_credit_notes_createdByTousers      credit_notes[]        @relation("credit_notes_createdByTousers")
+  expenses                                        expenses[]
+  ledger_entries                                  ledger_entries[]
+  payments                                        payments[]
+  pos_orders                                      pos_orders[]
+  product_returns                                 product_returns[]
+  projects                                        projects[]
+  purchase_orders                                 purchase_orders[]
+  reconciliation_logs                             reconciliation_logs[]
+  sales_deliveries                                sales_deliveries[]
+  sales_orders_sales_orders_approvedByTousers     sales_orders[]        @relation("sales_orders_approvedByTousers")
+  sales_orders_sales_orders_createdByTousers      sales_orders[]        @relation("sales_orders_createdByTousers")
+  sales_quotes                                    sales_quotes[]
+  stock_movements                                 stock_movements[]
+  stock_transfers                                 stock_transfers[]
+  supplier_bills_supplier_bills_approvedByTousers supplier_bills[]      @relation("supplier_bills_approvedByTousers")
+  supplier_bills_supplier_bills_createdByTousers  supplier_bills[]      @relation("supplier_bills_createdByTousers")
+  supplier_bills_supplier_bills_matchedByTousers  supplier_bills[]      @relation("supplier_bills_matchedByTousers")
+  supplier_payments                               supplier_payments[]
+  system_logs                                     system_logs[]
+}
+
+model warehouse_locations {
+  id                                                                  String            @id
+  warehouseId                                                         String
+  code                                                                String
+  name                                                                String
+  isActive                                                            Boolean           @default(true)
+  createdAt                                                           DateTime          @default(now())
+  updatedAt                                                           DateTime
+  stock_levels                                                        stock_levels[]
+  stock_movements                                                     stock_movements[]
+  stock_transfers_stock_transfers_fromLocationIdTowarehouse_locations stock_transfers[] @relation("stock_transfers_fromLocationIdTowarehouse_locations")
+  stock_transfers_stock_transfers_toLocationIdTowarehouse_locations   stock_transfers[] @relation("stock_transfers_toLocationIdTowarehouse_locations")
+  warehouses                                                          warehouses        @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@unique([warehouseId, code])
+}
+
+model warehouses {
+  id                  String                @id
+  code                String                @unique
+  name                String
+  address             String?
+  isActive            Boolean               @default(true)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime
+  stock_levels        stock_levels[]
+  stock_movements     stock_movements[]
+  warehouse_locations warehouse_locations[]
+}
