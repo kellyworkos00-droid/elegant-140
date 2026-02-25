@@ -120,13 +120,13 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-gradient-to-b from-[#1a2342] to-[#0f3460] text-white transition-transform duration-300 border-r border-[#e94560]/20 ${
+        className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 text-gray-900 transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 border-b border-[#e94560]/20 flex items-center">
+          <div className="p-6 border-b border-gray-200 flex items-center">
             <Image 
               src="/logo.png" 
               alt="Elegant Steel Hardware" 
@@ -135,7 +135,7 @@ export default function Sidebar() {
               priority
               className="rounded-lg"
             />
-            <span className="ml-3 text-lg font-bold text-[#e94560]">Elegant</span>
+            <span className="ml-3 text-lg font-bold text-[#0f3460]">Elegant</span>
           </div>
 
           {/* Menu Items */}
@@ -145,8 +145,8 @@ export default function Sidebar() {
                 <div
                   className={`flex items-center justify-between px-4 py-3 rounded-lg transition ${
                     pathname === item.href
-                      ? "bg-[#e94560] text-white"
-                      : "text-gray-300 hover:bg-[#e94560]/10"
+                      ? "bg-[#0f3460] text-white"
+                      : "text-gray-700 hover:bg-gray-100"
                   } ${item.submenu ? "cursor-pointer" : ""}`}
                   onClick={() =>
                     item.submenu && toggleSubmenu(item.label)
@@ -178,8 +178,8 @@ export default function Sidebar() {
                         href={subitem.href}
                         className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition ${
                           pathname === subitem.href
-                            ? "bg-[#e94560] text-white"
-                            : "text-gray-300 hover:bg-[#e94560]/10"
+                            ? "bg-[#0f3460] text-white"
+                            : "text-gray-700 hover:bg-gray-100"
                         }`}
                       >
                         <subitem.icon size={16} />
@@ -193,10 +193,10 @@ export default function Sidebar() {
           </nav>
 
           {/* Logout */}
-          <div className="p-4 border-t border-[#e94560]/20">
+          <div className="p-4 border-t border-gray-200">
             <button
               onClick={logout}
-              className="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-[#e94560] hover:text-white rounded-lg transition text-sm"
+              className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-[#0f3460] hover:text-white rounded-lg transition text-sm"
             >
               <LogOut size={20} />
               Logout

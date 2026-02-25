@@ -24,8 +24,8 @@ export default function DashboardLayout({ children }: LayoutProps) {
 
   if (!isClient || !token) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
-        <div className="text-white">Loading...</div>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-gray-900">Loading...</div>
       </div>
     );
   }
