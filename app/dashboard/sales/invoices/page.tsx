@@ -91,46 +91,61 @@ export default function InvoicesPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
-          <p className="text-gray-600 text-sm">Total Revenue</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">
-            KES {totalRevenue.toLocaleString()}
-          </p>
+        <div className="card card-hover p-6 flex items-center justify-between">
+          <div>
+            <p className="text-gray-600 text-sm font-medium">Total Revenue</p>
+            <p className="text-3xl font-bold text-gray-900 mt-2">
+              KES {totalRevenue.toLocaleString()}
+            </p>
+          </div>
+          <div className="bg-gradient-to-br from-blue-100 to-blue-50 p-3 rounded-lg">
+            <FileText size={24} className="text-blue-600" />
+          </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
-          <p className="text-gray-600 text-sm">Amount Paid</p>
-          <p className="text-3xl font-bold text-green-600 mt-2">
-            KES {paidAmount.toLocaleString()}
-          </p>
+        <div className="card card-hover p-6 flex items-center justify-between">
+          <div>
+            <p className="text-gray-600 text-sm font-medium">Amount Paid</p>
+            <p className="text-3xl font-bold text-green-600 mt-2">
+              KES {paidAmount.toLocaleString()}
+            </p>
+          </div>
+          <div className="bg-gradient-to-br from-green-100 to-green-50 p-3 rounded-lg">
+            <FileText size={24} className="text-green-600" />
+          </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-orange-500">
-          <p className="text-gray-600 text-sm">Pending Payment</p>
-          <p className="text-3xl font-bold text-orange-600 mt-2">
-            KES {pendingAmount.toLocaleString()}
-          </p>
+        <div className="card card-hover p-6 flex items-center justify-between">
+          <div>
+            <p className="text-gray-600 text-sm font-medium">Pending Payment</p>
+            <p className="text-3xl font-bold text-orange-600 mt-2">
+              KES {pendingAmount.toLocaleString()}
+            </p>
+          </div>
+          <div className="bg-gradient-to-br from-orange-100 to-orange-50 p-3 rounded-lg">
+            <FileText size={24} className="text-orange-600" />
+          </div>
         </div>
       </div>
 
       {/* Search and Filter */}
-      <div className="bg-white rounded-lg shadow p-4">
-        <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg">
+      <div className="card p-4">
+        <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
           <Search size={20} className="text-gray-400" />
           <input
             type="text"
             placeholder="Search by invoice number or customer..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-gray-100 border-0 outline-none w-full"
+            className="bg-gray-100 border-0 outline-none w-full text-gray-900 placeholder-gray-500"
           />
         </div>
       </div>
 
       {/* Invoices Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="card overflow-hidden">
         {loading ? (
           <div className="p-8 text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent mx-auto mb-2"></div>
-            <p>Loading invoices...</p>
+            <p className="text-gray-600 font-medium">Loading invoices...</p>
           </div>
         ) : filteredInvoices.length === 0 ? (
           <div className="p-8 text-center">
@@ -139,30 +154,30 @@ export default function InvoicesPage() {
           </div>
         ) : (
           <table className="w-full">
-            <thead className="bg-gray-50 border-b">
+            <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Invoice #</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Customer</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Amount</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Paid</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Balance</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Invoice #</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Customer</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Date</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Amount</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Paid</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Balance</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Status</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-200">
               {filteredInvoices.map((invoice) => (
-                <tr key={invoice.id} className="border-b hover:bg-gray-50 transition">
-                  <td className="px-6 py-4 font-medium text-blue-600">{invoice.number}</td>
-                  <td className="px-6 py-4">{invoice.customer?.name || 'N/A'}</td>
-                  <td className="px-6 py-4">{new Date(invoice.invoiceDate).toLocaleDateString()}</td>
-                  <td className="px-6 py-4">KES {(invoice.total || 0).toLocaleString()}</td>
-                  <td className="px-6 py-4 text-green-600 font-medium">KES {(invoice.paid || 0).toLocaleString()}</td>
-                  <td className="px-6 py-4 text-orange-600 font-medium">KES {((invoice.total || 0) - (invoice.paid || 0)).toLocaleString()}</td>
+                <tr key={invoice.id} className="hover:bg-blue-50 transition-colors">
+                  <td className="px-6 py-4 font-bold text-blue-600">{invoice.number}</td>
+                  <td className="px-6 py-4 font-medium text-gray-900">{invoice.customer?.name || 'N/A'}</td>
+                  <td className="px-6 py-4 text-gray-600">{new Date(invoice.invoiceDate).toLocaleDateString()}</td>
+                  <td className="px-6 py-4 font-semibold text-gray-900">KES {(invoice.total || 0).toLocaleString()}</td>
+                  <td className="px-6 py-4 text-green-600 font-bold">KES {(invoice.paid || 0).toLocaleString()}</td>
+                  <td className="px-6 py-4 text-orange-600 font-bold">KES {((invoice.total || 0) - (invoice.paid || 0)).toLocaleString()}</td>
                   <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      invoice.status === 'PAID' ? 'bg-green-100 text-green-800' :
-                      invoice.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                      invoice.status === 'PAID' ? 'badge-success' :
+                      invoice.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
                       'bg-gray-100 text-gray-800'
                     }`}>
                       {invoice.status || 'DRAFT'}
