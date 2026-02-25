@@ -4,15 +4,13 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import toast from "react-hot-toast";
-import { Lock, Mail, Loader2, Eye, EyeOff, Copy, Check } from "lucide-react";
+import { Lock, Mail, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [copiedCredential, setCopiedCredential] = useState<string | null>(null);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,234 +41,123 @@ export default function LoginPage() {
     }
   };
 
-  const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedCredential(id);
-    setTimeout(() => setCopiedCredential(null), 2000);
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-5xl">
-        <div className="grid lg:grid-cols-2 gap-0 items-stretch">
-          {/* Left Panel - Branding */}
-          <div className="hidden lg:flex flex-col justify-between p-12 bg-gradient-to-br from-[#0f3460] to-[#1a2342] rounded-l-2xl shadow-2xl">
-            <div>
-              <div className="flex items-center gap-4 mb-12">
-                <div className="p-3 bg-white/10 rounded-xl backdrop-blur-sm">
-                  <Image 
-                    src="/logo.png" 
-                    alt="Elegant Steel" 
-                    width={40} 
-                    height={40}
-                    priority
-                    className="rounded-lg"
-                  />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-white">Elegant Steel</h1>
-                  <p className="text-blue-200 text-sm font-medium">ERP System</p>
-                </div>
-              </div>
-
-              <div className="space-y-8">
-                <div>
-                  <h2 className="text-4xl font-bold text-white mb-4 leading-tight">
-                    Professional Steel Hardware Management
-                  </h2>
-                  <p className="text-blue-100 text-lg leading-relaxed">
-                    Streamline your operations with our comprehensive Enterprise Resource Planning solution.
-                  </p>
-                </div>
-
-                <div className="space-y-4">
-                  {[
-                    { icon: "📊", title: "Real-time Analytics", desc: "Track inventory, sales, and operations" },
-                    { icon: "🔒", title: "Enterprise Security", desc: "Bank-level encryption and access control" },
-                    { icon: "⚡", title: "Lightning Fast", desc: "Optimized for performance" },
-                    { icon: "👥", title: "Team Collaboration", desc: "Multi-user access management" }
-                  ].map((feature, i) => (
-                    <div key={i} className="flex items-start gap-4">
-                      <span className="text-2xl flex-shrink-0">{feature.icon}</span>
-                      <div>
-                        <p className="text-white font-semibold">{feature.title}</p>
-                        <p className="text-blue-100 text-sm">{feature.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-8 border-t border-white/10">
-              <p className="text-blue-200 text-sm">
-                © 2026 Elegant Steel Hardware. All rights reserved.
-              </p>
-            </div>
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(to bottom right, #f8fafc, #e2e8f0)' }}>
+      <div className="flex rounded-lg overflow-hidden shadow-[0px_187px_75px_rgba(0,0,0,0.01),0px_105px_63px_rgba(0,0,0,0.05),0px_47px_47px_rgba(0,0,0,0.09),0px_12px_26px_rgba(0,0,0,0.1)]">
+        {/* Login Form Section */}
+        <div className="w-[350px] bg-white p-5 flex flex-col gap-4">
+          {/* Header */}
+          <div className="flex flex-col items-center my-4">
+            <Image 
+              src="/logo.png" 
+              alt="Elegant Steel" 
+              width={50} 
+              height={50}
+              priority
+              className="rounded-lg mb-3"
+            />
+            <h2 className="font-bold text-[15px] leading-[21px] text-center text-[#2B2B2F] mb-2.5">
+              Sign In to Your Account
+            </h2>
+            <p className="max-w-[80%] mx-auto font-semibold text-[10px] leading-[14px] text-center text-[#5F5D6B]">
+              Access your Elegant Steel ERP system to manage operations efficiently.
+            </p>
           </div>
 
-          {/* Right Panel - Login Form */}
-          <div className="bg-white p-8 lg:p-12 rounded-r-2xl shadow-2xl">
-            {/* Mobile Logo */}
-            <div className="lg:hidden text-center mb-8">
-              <Image 
-                src="/logo.png" 
-                alt="Elegant Steel" 
-                width={48} 
-                height={48}
-                priority
-                className="rounded-lg mx-auto mb-4"
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            {/* Email Input */}
+            <div className="w-full relative flex flex-col gap-1.5">
+              <Mail 
+                className="w-5 h-5 absolute z-10 left-3 bottom-2.5 text-[#141B34]" 
+                strokeWidth={1.5}
               />
-              <h1 className="text-2xl font-bold text-gray-900">Elegant Steel</h1>
+              <input
+                id="email_field"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@mail.com"
+                className="w-full h-10 pl-10 pr-3 rounded-[7px] outline-none border border-[#e5e5e5] transition-all duration-300 ease-[cubic-bezier(0.15,0.83,0.66,1)] focus:border-transparent focus:shadow-[0px_0px_0px_2px_#115DFC]"
+                style={{ 
+                  filter: 'drop-shadow(0px 1px 0px #efefef) drop-shadow(0px 1px 0.5px rgba(239, 239, 239, 0.5))' 
+                }}
+                required
+                disabled={isLoading}
+              />
             </div>
 
-            {/* Header */}
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome</h2>
-              <p className="text-gray-600 font-medium">Sign in to your account</p>
+            {/* Password Input */}
+            <div className="w-full relative flex flex-col gap-1.5">
+              <Lock 
+                className="w-5 h-5 absolute z-10 left-3 bottom-2.5 text-[#141B34]" 
+                strokeWidth={1.5}
+              />
+              <input
+                id="password_field"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                className="w-full h-10 pl-10 pr-3 rounded-[7px] outline-none border border-[#e5e5e5] transition-all duration-300 ease-[cubic-bezier(0.15,0.83,0.66,1)] focus:border-transparent focus:shadow-[0px_0px_0px_2px_#115DFC]"
+                style={{ 
+                  filter: 'drop-shadow(0px 1px 0px #efefef) drop-shadow(0px 1px 0.5px rgba(239, 239, 239, 0.5))' 
+                }}
+                required
+                disabled={isLoading}
+              />
             </div>
 
-            {/* Login Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@kellyos.com"
-                    className="w-full pl-12 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:border-[#0f3460] focus:ring-2 focus:ring-[#0f3460]/10 transition-all"
-                    required
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
+            {/* Sign In Button */}
+            <button
+              type="submit"
+              disabled={isLoading || !email || !password}
+              className="flex flex-row justify-center items-center gap-2.5 w-full h-9 rounded-[5px] border-0 font-semibold text-xs leading-[15px] text-white transition-all duration-[0.6s] ease-[cubic-bezier(0.15,0.83,0.66,1)] hover:scale-[1.01] hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              style={{ 
+                background: isLoading ? '#6b7280' : 'linear-gradient(180deg, #4480FF 0%, #115DFC 50%, #0550ED 100%)',
+                boxShadow: '0px 0.5px 0.5px #EFEFEF, 0px 1px 0.5px rgba(239, 239, 239, 0.5)'
+              }}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Signing in...</span>
+                </>
+              ) : (
+                <span>Sign In</span>
+              )}
+            </button>
+          </form>
+        </div>
 
-              {/* Password */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-semibold text-gray-900">
-                    Password
-                  </label>
-                  <a href="#" className="text-xs text-[#0f3460] hover:text-[#1a2342] font-semibold">
-                    Forgot?
-                  </a>
-                </div>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full pl-12 pr-12 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:border-[#0f3460] focus:ring-2 focus:ring-[#0f3460]/10 transition-all"
-                    required
-                    disabled={isLoading}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-3.5 text-gray-400 hover:text-gray-600 transition-colors"
-                    disabled={isLoading}
-                  >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Remember Me */}
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="w-4 h-4 rounded border-gray-300 text-[#0f3460] cursor-pointer accent-[#0f3460]"
-                  disabled={isLoading}
-                />
-                <span className="text-sm font-medium text-gray-700">Keep me signed in</span>
-              </label>
-
-              {/* Sign In Button */}
-              <button
-                type="submit"
-                disabled={isLoading || !email || !password}
-                className="w-full py-2.5 px-4 mt-8 bg-gradient-to-r from-[#0f3460] to-[#1a2342] hover:from-[#1a2342] hover:to-[#0f3460] text-white font-semibold rounded-lg transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Signing in...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Sign In</span>
-                    <span>→</span>
-                  </>
-                )}
-              </button>
-            </form>
-
-            {/* Divider */}
-            <div className="my-8 flex items-center gap-3">
-              <div className="flex-1 h-px bg-gray-200"></div>
-              <span className="text-xs font-semibold text-gray-500 uppercase">Demo Accounts</span>
-              <div className="flex-1 h-px bg-gray-200"></div>
-            </div>
-
-            {/* Demo Credentials */}
-            <div className="space-y-3">
-              {/* Admin */}
-              <button
-                type="button"
-                onClick={() => copyToClipboard("admin@kellyos.com / Admin@123", "admin")}
-                className="w-full p-3 text-left bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition-all group"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-blue-900 uppercase tracking-wider">Admin</p>
-                    <p className="text-sm font-medium text-gray-800 truncate">admin@kellyos.com</p>
-                    <p className="text-xs text-gray-600 font-mono">Admin@123</p>
-                  </div>
-                  {copiedCredential === "admin" ? (
-                    <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
-                  ) : (
-                    <Copy className="w-5 h-5 text-blue-600 flex-shrink-0 opacity-60 group-hover:opacity-100 transition-opacity" />
-                  )}
-                </div>
-              </button>
-
-              {/* Owner */}
-              <button
-                type="button"
-                onClick={() => copyToClipboard("pkingori14@gmail.com / owner@2026", "owner")}
-                className="w-full p-3 text-left bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 hover:border-indigo-300 transition-all group"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-indigo-900 uppercase tracking-wider">Owner</p>
-                    <p className="text-sm font-medium text-gray-800 truncate">pkingori14@gmail.com</p>
-                    <p className="text-xs text-gray-600 font-mono">owner@2026</p>
-                  </div>
-                  {copiedCredential === "owner" ? (
-                    <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
-                  ) : (
-                    <Copy className="w-5 h-5 text-indigo-600 flex-shrink-0 opacity-60 group-hover:opacity-100 transition-opacity" />
-                  )}
-                </div>
-              </button>
-
-              <p className="text-xs text-center text-gray-500 pt-2">Click to copy credentials</p>
-            </div>
-
-            {/* Footer */}
-            <div className="mt-8 pt-6 border-t border-gray-200 text-center">
-              <p className="text-xs text-gray-500">
-                🔒 Secure Login • SSL Encrypted
-              </p>
-            </div>
+        {/* Testimonial Section */}
+        <div 
+          className="w-[250px] flex flex-col items-center justify-center gap-5 p-5 rounded-r-lg"
+          style={{ 
+            background: 'linear-gradient(358.31deg, #fff -24.13%, hsla(0,0%,100%,0) 338.58%), linear-gradient(89.84deg, rgba(230,36,174,.15) .34%, rgba(94,58,255,.15) 16.96%, rgba(10,136,255,.15) 34.66%, rgba(75,191,80,.15) 50.12%, rgba(137,206,0,.15) 66.22%, rgba(239,183,0,.15) 82%, rgba(246,73,0,.15) 99.9%)' 
+          }}
+        >
+          <p className="text-[#4d4c6d] text-[11px] text-center font-semibold">
+            "I've been using this ERP system for managing our steel hardware business and it's incredibly efficient! The interface is intuitive and saves us hours of work daily."
+          </p>
+          
+          <div className="w-[50px] h-[50px] rounded-full bg-[#00000011] flex items-center justify-center overflow-hidden">
+            <Image 
+              src="/logo.png" 
+              alt="User" 
+              width={45} 
+              height={45}
+              className="rounded-full object-cover"
+            />
+          </div>
+          
+          <div className="flex flex-col items-center justify-center gap-1">
+            <span className="text-[#4d4c6d] text-[11px] text-center font-semibold">
+              Kelly Workos
+            </span>
+            <span className="text-[#8d8ca1] text-[10px] text-center font-semibold">
+              Operations Manager
+            </span>
           </div>
         </div>
       </div>
