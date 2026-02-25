@@ -46,55 +46,82 @@ export default function InventoryPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-            <Package size={32} /> Inventory Management
+            <Package size={32} className="text-blue-600" /> Inventory Management
           </h1>
           <p className="text-gray-600 mt-1">Track and manage product stock levels</p>
         </div>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+        <button className="btn-primary flex items-center gap-2">
           <Plus size={20} /> Add Product
         </button>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-gray-600 text-sm">Total Products</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">{products.length}</p>
+        <div className="card card-hover p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Total Products</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">{products.length}</p>
+            </div>
+            <div className="bg-gradient-to-br from-blue-100 to-blue-50 p-3 rounded-lg">
+              <Package size={24} className="text-blue-600" />
+            </div>
+          </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-gray-600 text-sm">Low Stock Items</p>
-          <p className="text-3xl font-bold text-orange-600 mt-2 flex items-center gap-2">
-            {lowStockItems.length}
-            {lowStockItems.length > 0 && <AlertCircle size={24} />}
-          </p>
+        <div className="card card-hover p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Low Stock Items</p>
+              <p className="text-3xl font-bold text-orange-600 mt-2">
+                {lowStockItems.length}
+              </p>
+            </div>
+            <div className="bg-gradient-to-br from-orange-100 to-orange-50 p-3 rounded-lg">
+              <AlertCircle size={24} className="text-orange-600" />
+            </div>
+          </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-gray-600 text-sm">Total Stock Value</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">
-            KES{" "}
-            {products
-              .reduce((sum, p) => sum + (p.cost || 0) * p.quantity, 0)
-              .toLocaleString()}
-          </p>
+        <div className="card card-hover p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Total Stock Value</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">
+                KES{" "}
+                {products
+                  .reduce((sum, p) => sum + (p.cost || 0) * p.quantity, 0)
+                  .toLocaleString()}
+              </p>
+            </div>
+            <div className="bg-gradient-to-br from-green-100 to-green-50 p-3 rounded-lg">
+              <TrendingDown size={24} className="text-green-600" />
+            </div>
+          </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-gray-600 text-sm">Inactive Products</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">
-            {products.filter((p) => p.status === "INACTIVE").length}
-          </p>
+        <div className="card card-hover p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Inactive Products</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">
+                {products.filter((p) => p.status === "INACTIVE").length}
+              </p>
+            </div>
+            <div className="bg-gradient-to-br from-gray-100 to-gray-50 p-3 rounded-lg">
+              <Package size={24} className="text-gray-600" />
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Low Stock Alert */}
       {lowStockItems.length > 0 && (
-        <div className="bg-orange-50 border border-orange-200 rounded-lg shadow p-4 flex items-start gap-4">
+        <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl shadow-sm p-6 flex items-start gap-4 transform transition-all hover:shadow-md">
           <AlertCircle className="text-orange-600 mt-1 flex-shrink-0" size={24} />
-          <div>
-            <h3 className="font-semibold text-orange-900 mb-2">Low Stock Alert</h3>
+          <div className="flex-1">
+            <h3 className="font-semibold text-orange-900 mb-2 text-lg">Low Stock Alert</h3>
             <p className="text-orange-800 text-sm">
               {lowStockItems.length} item(s) are below reorder level. Click "View Low Stock" to manage.
             </p>
-            <button className="mt-2 text-orange-700 hover:text-orange-900 font-medium text-sm">
+            <button className="mt-3 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium text-sm transition-colors">
               View Low Stock Items
             </button>
           </div>
@@ -103,33 +130,33 @@ export default function InventoryPage() {
 
       {/* Products Table */}
       {isLoading ? (
-        <div className="bg-white rounded-lg shadow p-8 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-blue-200 mx-auto"></div>
+        <div className="card p-8 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="card overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">SKU</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Product Name</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Quantity</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Reorder Level</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Unit Price</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">SKU</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Product Name</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Quantity</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Reorder Level</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Unit Price</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {products.slice(0, 10).map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-mono text-gray-900">{product.sku}</td>
+                <tr key={product.id} className="hover:bg-blue-50 transition-colors">
+                  <td className="px-6 py-4 text-sm font-mono text-gray-900 font-medium">{product.sku}</td>
                   <td className="px-6 py-4 text-sm text-gray-900 font-medium">{product.name}</td>
                   <td className="px-6 py-4 text-sm">
                     <span
                       className={
                         product.quantity <= product.reorderLevel
-                          ? "text-red-600 font-semibold flex items-center gap-1"
-                          : "text-gray-900"
+                          ? "text-red-600 font-bold flex items-center gap-1"
+                          : "text-gray-900 font-semibold"
                       }
                     >
                       {product.quantity <= product.reorderLevel && (
@@ -138,13 +165,13 @@ export default function InventoryPage() {
                       {product.quantity} {product.unit}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{product.reorderLevel}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">KES {product.price.toLocaleString()}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600 font-medium">{product.reorderLevel}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 font-semibold">KES {product.price.toLocaleString()}</td>
                   <td className="px-6 py-4 text-sm">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      className={`px-3 py-1 rounded-full text-xs font-bold ${
                         product.status === "ACTIVE"
-                          ? "bg-green-100 text-green-800"
+                          ? "badge-success"
                           : "bg-gray-100 text-gray-800"
                       }`}
                     >

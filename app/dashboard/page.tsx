@@ -59,87 +59,87 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-1">
-          Welcome back! Here's your business overview.
+    <div className="space-y-8">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-[#0f3460] to-[#1a2342] rounded-2xl p-8 text-white shadow-lg">
+        <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
+        <p className="text-blue-100 text-lg">
+          Welcome back! Here's your business performance overview.
         </p>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Revenue Card */}
-        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-6 transition-all duration-300 transform hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Total Revenue</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">
+              <p className="text-gray-500 text-sm font-semibold uppercase tracking-wide">Total Revenue</p>
+              <p className="text-4xl font-bold text-gray-900 mt-3">
                 KES {(dashboardData.revenue / 1000).toFixed(0)}K
               </p>
-              <p className="text-green-600 text-sm mt-2 flex items-center gap-1">
+              <p className="text-green-600 text-sm mt-3 flex items-center gap-1 font-semibold">
                 <TrendingUp size={16} /> +12.5% from last month
               </p>
             </div>
-            <div className="bg-blue-100 p-3 rounded-full">
-              <DollarSign size={32} className="text-blue-600" />
+            <div className="bg-gradient-to-br from-blue-100 to-blue-50 p-4 rounded-xl">
+              <DollarSign size={40} className="text-blue-600" />
             </div>
           </div>
         </div>
 
         {/* Profit Card */}
-        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-6 transition-all duration-300 transform hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Total Profit</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">
+              <p className="text-gray-500 text-sm font-semibold uppercase tracking-wide">Total Profit</p>
+              <p className="text-4xl font-bold text-gray-900 mt-3">
                 KES {(dashboardData.profit / 1000).toFixed(0)}K
               </p>
-              <p className="text-green-600 text-sm mt-2">
+              <p className="text-green-600 text-sm mt-3 font-semibold">
                 71.1% profit margin
               </p>
             </div>
-            <div className="bg-green-100 p-3 rounded-full">
-              <TrendingUp size={32} className="text-green-600" />
+            <div className="bg-gradient-to-br from-green-100 to-green-50 p-4 rounded-xl">
+              <TrendingUp size={40} className="text-green-600" />
             </div>
           </div>
         </div>
 
         {/* Expenses Card */}
-        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-red-500">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-6 transition-all duration-300 transform hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Total Expenses</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">
+              <p className="text-gray-500 text-sm font-semibold uppercase tracking-wide">Total Expenses</p>
+              <p className="text-4xl font-bold text-gray-900 mt-3">
                 KES {(dashboardData.expenses / 1000).toFixed(0)}K
               </p>
-              <p className="text-red-600 text-sm mt-2 flex items-center gap-1">
+              <p className="text-red-600 text-sm mt-3 flex items-center gap-1 font-semibold">
                 <TrendingDown size={16} /> -8.2% from last month
               </p>
             </div>
-            <div className="bg-red-100 p-3 rounded-full">
-              <AlertCircle size={32} className="text-red-600" />
+            <div className="bg-gradient-to-br from-red-100 to-red-50 p-4 rounded-xl">
+              <AlertCircle size={40} className="text-red-600" />
             </div>
           </div>
         </div>
 
         {/* Orders Card */}
-        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-orange-500">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-6 transition-all duration-300 transform hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Total Orders</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">
+              <p className="text-gray-500 text-sm font-semibold uppercase tracking-wide">Total Orders</p>
+              <p className="text-4xl font-bold text-gray-900 mt-3">
                 {dashboardData.totalOrders}
               </p>
-              <p className="text-orange-600 text-sm mt-2">
+              <p className="text-orange-600 text-sm mt-3 font-semibold">
                 {dashboardData.todaysSales > 0
                   ? `KES ${(dashboardData.todaysSales / 1000).toFixed(0)}K today`
                   : "No sales today"}
               </p>
             </div>
-            <div className="bg-orange-100 p-3 rounded-full">
-              <ShoppingCart size={32} className="text-orange-600" />
+            <div className="bg-gradient-to-br from-orange-100 to-orange-50 p-4 rounded-xl">
+              <ShoppingCart size={40} className="text-orange-600" />
             </div>
           </div>
         </div>
@@ -148,25 +148,35 @@ export default function DashboardPage() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Sales & Expenses Chart */}
-        <div className="lg:col-span-2 bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Sales & Expenses Trend
-          </h2>
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-6 transition-all">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900">
+              Sales & Expenses Trend
+            </h2>
+            <span className="text-sm text-gray-500">Last 7 months</span>
+          </div>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={salesData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="sales" fill="#3b82f6" />
-              <Bar dataKey="expenses" fill="#ef4444" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="name" stroke="#9ca3af" />
+              <YAxis stroke="#9ca3af" />
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                }}
+              />
+              <Bar dataKey="sales" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="expenses" fill="#ef4444" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         {/* Sales by Category Pie Chart */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-6 transition-all">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">
             Sales by Category
           </h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -188,7 +198,14 @@ export default function DashboardPage() {
                   />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -197,53 +214,55 @@ export default function DashboardPage() {
       {/* Bottom Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Receivables & Payables */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-6 transition-all">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">
             Accounts Overview
           </h2>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-transparent rounded-lg border-l-4 border-blue-500">
+            <div className="flex items-center justify-between p-6 bg-gradient-to-r from-blue-50 to-blue-100/50 rounded-xl border border-blue-200 hover:border-blue-300 transition-all">
               <div>
-                <p className="text-gray-600 text-sm">Accounts Receivable</p>
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-gray-600 text-sm font-semibold">Accounts Receivable</p>
+                <p className="text-3xl font-bold text-blue-600 mt-2">
                   KES {(dashboardData.receivables / 1000).toFixed(0)}K
                 </p>
               </div>
-              <TrendingUp className="text-blue-600" size={32} />
+              <TrendingUp className="text-blue-600" size={40} />
             </div>
-            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-red-50 to-transparent rounded-lg border-l-4 border-red-500">
+            <div className="flex items-center justify-between p-6 bg-gradient-to-r from-red-50 to-red-100/50 rounded-xl border border-red-200 hover:border-red-300 transition-all">
               <div>
-                <p className="text-gray-600 text-sm">Accounts Payable</p>
-                <p className="text-2xl font-bold text-red-600">
+                <p className="text-gray-600 text-sm font-semibold">Accounts Payable</p>
+                <p className="text-3xl font-bold text-red-600 mt-2">
                   KES {(dashboardData.payables / 1000).toFixed(0)}K
                 </p>
               </div>
-              <AlertCircle className="text-red-600" size={32} />
+              <AlertCircle className="text-red-600" size={40} />
             </div>
           </div>
         </div>
 
         {/* Low Stock Alerts */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-6 transition-all">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">
             Inventory Alerts
           </h2>
-          <div className="space-y-3">
-            <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-orange-50 to-transparent rounded-lg border-l-4 border-orange-500">
-              <Package className="text-orange-600" size={24} />
-              <div>
+          <div className="space-y-4">
+            <div className="flex items-center gap-4 p-6 bg-gradient-to-r from-orange-50 to-orange-100/50 rounded-xl border border-orange-200">
+              <div className="bg-orange-600 p-3 rounded-lg">
+                <Package className="text-white" size={24} />
+              </div>
+              <div className="flex-1">
                 <p className="font-semibold text-gray-900">
                   {dashboardData.lowStockItems} Items Low in Stock
                 </p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 mt-1">
                   Requiring reorder attention
                 </p>
               </div>
             </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <span className="text-sm text-gray-600">Last checked</span>
-              <span className="text-sm font-semibold text-gray-900">
-                2 minutes ago
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <span className="text-sm text-gray-600 font-semibold">Last checked</span>
+              <span className="text-sm font-bold text-gray-900 bg-white px-3 py-1 rounded-lg">
+                2 mins ago
               </span>
             </div>
           </div>
@@ -251,27 +270,32 @@ export default function DashboardPage() {
       </div>
 
       {/* Recent Transactions */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Recent Transactions
-        </h2>
+      <div className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-6 transition-all">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-gray-900">
+            Recent Transactions
+          </h2>
+          <a href="#" className="text-[#0f3460] hover:text-[#e94560] font-semibold text-sm transition">
+            View all →
+          </a>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 text-gray-600 font-semibold">
+                <th className="text-left py-4 px-4 text-gray-600 font-bold uppercase text-xs tracking-wider">
                   Date
                 </th>
-                <th className="text-left py-3 px-4 text-gray-600 font-semibold">
+                <th className="text-left py-4 px-4 text-gray-600 font-bold uppercase text-xs tracking-wider">
                   Invoice
                 </th>
-                <th className="text-left py-3 px-4 text-gray-600 font-semibold">
+                <th className="text-left py-4 px-4 text-gray-600 font-bold uppercase text-xs tracking-wider">
                   Customer
                 </th>
-                <th className="text-left py-3 px-4 text-gray-600 font-semibold">
+                <th className="text-left py-4 px-4 text-gray-600 font-bold uppercase text-xs tracking-wider">
                   Amount
                 </th>
-                <th className="text-left py-3 px-4 text-gray-600 font-semibold">
+                <th className="text-left py-4 px-4 text-gray-600 font-bold uppercase text-xs tracking-wider">
                   Status
                 </th>
               </tr>
@@ -300,21 +324,21 @@ export default function DashboardPage() {
                   status: "Paid",
                 },
               ].map((row) => (
-                <tr key={row.invoice} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-4">{row.date}</td>
-                  <td className="py-3 px-4 font-semibold text-gray-900">
+                <tr key={row.invoice} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="py-4 px-4 text-gray-700">{row.date}</td>
+                  <td className="py-4 px-4 font-bold text-[#0f3460]">
                     {row.invoice}
                   </td>
-                  <td className="py-3 px-4 text-gray-700">{row.customer}</td>
-                  <td className="py-3 px-4 font-semibold text-gray-900">
+                  <td className="py-4 px-4 text-gray-900 font-medium">{row.customer}</td>
+                  <td className="py-4 px-4 font-bold text-gray-900">
                     KES {(row.amount / 1000).toFixed(0)}K
                   </td>
-                  <td className="py-3 px-4">
+                  <td className="py-4 px-4">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider ${
                         row.status === "Paid"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-yellow-100 text-yellow-800"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-yellow-100 text-yellow-700"
                       }`}
                     >
                       {row.status}

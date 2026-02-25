@@ -51,17 +51,17 @@ export default function CustomersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-            <Users size={32} /> Customers
+            <Users size={32} className="text-blue-600" /> Customers
           </h1>
           <p className="text-gray-600 mt-1">Manage your customers and accounts</p>
         </div>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+        <button className="btn-primary flex items-center gap-2">
           <Plus size={20} /> Add Customer
         </button>
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow p-4 flex gap-4">
+      <div className="card p-4 flex gap-4">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
           <input
@@ -69,53 +69,55 @@ export default function CustomersPage() {
             placeholder="Search customers..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           />
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+        <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors font-medium">
           <Filter size={20} /> Filter
         </button>
       </div>
 
       {/* Customers Table */}
       {isLoading ? (
-        <div className="bg-white rounded-lg shadow p-8 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-blue-200 mx-auto"></div>
+        <div className="card p-8 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
         </div>
       ) : filteredCustomers.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+        <div className="card p-12 text-center text-gray-500">
           <Users size={48} className="mx-auto opacity-50 mb-4" />
-          <p>No customers found</p>
+          <p className="text-lg font-medium">No customers found</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="card overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Customer Code</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Name</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Email</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Balance</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Outstanding</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Customer Code</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Name</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Email</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Balance</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Outstanding</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredCustomers.map((customer) => (
-                <tr key={customer.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-mono text-gray-900">{customer.customerCode}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 font-medium">{customer.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{customer.email || "-"}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
+                <tr key={customer.id} className="hover:bg-blue-50 transition-colors">
+                  <td className="px-6 py-4 text-sm font-mono text-gray-900 font-bold">{customer.customerCode}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 font-semibold">{customer.name}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{customer.email || <span className="text-gray-400">-</span>}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 font-semibold">
                     KES {customer.currentBalance.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-sm">
-                    <span className={customer.totalOutstanding > 0 ? "text-red-600" : "text-green-600"}>
+                    <span className={`font-bold ${customer.totalOutstanding > 0 ? "text-red-600" : "text-green-600"}`}>
                       KES {customer.totalOutstanding.toLocaleString()}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm">
-                    <button className="text-blue-600 hover:text-blue-800 font-medium">View</button>
+                    <button className="px-3 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg font-semibold text-xs transition-colors">
+                      View Details
+                    </button>
                   </td>
                 </tr>
               ))}
